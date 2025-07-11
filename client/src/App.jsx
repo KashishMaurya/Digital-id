@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
 
-export default function App() {
+function App() {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
@@ -10,3 +10,5 @@ export default function App() {
     </Routes>
   );
 }
+
+export default App;
