@@ -1,0 +1,169 @@
+.dashboard-wrapper {
+  padding: 1.5rem;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.dashboard-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.navbar-left {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+.navbar-right {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn.primary {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.btn.outline {
+  border: 1px solid #007bff;
+  background-color: white;
+  color: #007bff;
+}
+
+.dashboard-header {
+  margin-bottom: 1rem;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1c1c1e;
+}
+
+.dashboard-header p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.dashboard-actions {
+  margin-bottom: 2rem;
+}
+
+.profile-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  justify-content: flex-start;
+}
+
+.profile-card {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 1.2rem;
+  width: 280px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  border: 2px solid #007bff;
+}
+
+.profile-role-label {
+  font-size: 0.85rem;
+  color: #007bff;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+
+.profile-details {
+  font-size: 0.88rem;
+  color: #444;
+  margin-bottom: 0.8rem;
+}
+
+.qr-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.3rem;
+}
+
+.qr-label {
+  font-size: 0.75rem;
+  color: #777;
+  margin-top: 0.3rem;
+  margin-bottom: 0.8rem;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.profile-actions button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.profile-actions button:hover {
+  background-color: #f0f0f0;
+}
+
+.profile-actions .danger {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+.created-date {
+  font-size: 0.7rem;
+  color: #999;
+  margin-top: 0.6rem;
+}
+
+@media (max-width: 768px) {
+  .profile-grid {
+    justify-content: center;
+  }
+  .dashboard-navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .navbar-right {
+    justify-content: flex-start;
+  }
+}

@@ -6,12 +6,19 @@ export default function PublicProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/profiles/${id}`)
-      .then((res) => setProfile(res.data))
-      .catch((err) => console.error(err));
-  }, [id]);
+  const API_BASE =
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "http://192.168.1.42:5000";
+
+      useEffect(() => {
+        axios
+          .get(`${API_BASE}/api/profiles/${id}`)
+          .then((res) => setProfile(res.data))
+          .catch((err) => {
+            console.error("Error fetching profile:", err.message);
+          });
+      }, [id]);
 
   if (!profile) return <p>Loading...</p>;
 

@@ -10,10 +10,15 @@ const profileSchema = new mongoose.Schema(
     name: String,
     age: String,
     gender: String,
+    type: String, 
+    condition: String, 
     address: String,
     phone: String,
     message: String,
-    photo: String, // saved filename
+    photo: {
+      type: String,
+      default: "",
+    }, 
     bloodGroup: String,
     medical: String,
     allergies: String,
@@ -23,7 +28,9 @@ const profileSchema = new mongoose.Schema(
     chipId: String,
     customFields: [{ label: String, value: String }],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = mongoose.model("Profile", profileSchema);

@@ -1,0 +1,118 @@
+/* Ensure consistent sizing inside the container */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* General Container */
+.create-profile-container {
+  max-width: 540px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #f9f9f9;
+  border: 2px solid #ccc;
+  border-radius: 16px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  color: #111;
+  overflow: hidden;
+}
+
+/* Heading */
+.create-profile-container h2 {
+  text-align: center;
+  font-size: 26px;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+}
+
+/* Labels, Inputs, Select, Textarea */
+.create-profile-container input,
+.create-profile-container select,
+.create-profile-container textarea {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border: 2px solid #999;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #fff;
+  color: #000;
+}
+
+.create-profile-container input:focus,
+.create-profile-container select:focus,
+.create-profile-container textarea:focus {
+  border-color: #0056b3;
+  outline: none;
+}
+
+/* Textarea */
+.create-profile-container textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+/* Custom Fields Row */
+.custom-field-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+/* Buttons */
+.create-profile-container button[type="submit"],
+.create-profile-container button[type="button"] {
+  width: 100%;
+  padding: 14px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.create-profile-container button[type="button"] {
+  background-color: #6c757d;
+}
+
+.create-profile-container button:hover {
+  background-color: #0056b3;
+}
+
+/* Section Heading */
+.create-profile-container h4 {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #222;
+}
+
+/* Back Button */
+.back-button {
+  display: inline-block;
+  margin-bottom: 20px;
+  background-color: #dc3545;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.back-button:hover {
+  background-color: #b02a37;
+}
+
+@media (max-width: 600px) {
+  .create-profile-container {
+    padding: 16px;
+    max-width: 95%;
+  }
+}

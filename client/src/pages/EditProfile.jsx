@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../components/css/CreateProfile.css";
 
-export default function CreateProfile() {
+export default function EditProfile() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
-  const [type, setType] = useState("");
-  const [condition, setCondition] = useState("");
-
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
@@ -22,9 +22,36 @@ export default function CreateProfile() {
   const [emergencyPhone, setEmergencyPhone] = useState("");
   const [breed, setBreed] = useState("");
   const [chipId, setChipId] = useState("");
+  const [customFields, setCustomFields] = useState([]);
 
-  const [customFields, setCustomFields] = useState([{ label: "", value: "" }]);
-  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios
+      .get(`http://localhost:5000/api/profiles/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const p = res.data;
+        setName(p.name || "");
+        setAge(p.age || "");
+        setGender(p.gender || "");
+        setAddress(p.address || "");
+        setPhone(p.phone || "");
+        setMessage(p.message || "");
+        setBloodGroup(p.bloodGroup || "");
+        setMedical(p.medical || "");
+        setAllergies(p.allergies || "");
+        setEmergencyName(p.emergencyName || "");
+        setEmergencyPhone(p.emergencyPhone || "");
+        setBreed(p.breed || "");
+        setChipId(p.chipId || "");
+        setCustomFields(p.customFields || []);
+      })
+      .catch((err) => {
+        alert("Failed to load profile");
+        navigate("/dashboard");
+      });
+  }, [id, navigate]);
 
   const handleAddField = () => {
     setCustomFields([...customFields, { label: "", value: "" }]);
@@ -38,17 +65,13 @@ export default function CreateProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formData = new FormData();
     formData.append("name", name);
     formData.append("age", age);
     formData.append("gender", gender);
-    formData.append("type", type);
-    formData.append("condition", condition);
     formData.append("address", address);
     formData.append("phone", phone);
     formData.append("message", message);
-    formData.append("photo", photo);
     formData.append("bloodGroup", bloodGroup);
     formData.append("medical", medical);
     formData.append("allergies", allergies);
@@ -57,21 +80,23 @@ export default function CreateProfile() {
     formData.append("breed", breed);
     formData.append("chipId", chipId);
     formData.append("customFields", JSON.stringify(customFields));
+    if (photo) {
+      formData.append("photo", photo);
+    }
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("/api/profiles", formData, {
+      await axios.put(`http://localhost:5000/api/profiles/${id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
-
-      alert("Profile created successfully!");
+      alert("Profile updated");
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      alert("Failed to create profile");
+      alert("Failed to update profile");
     }
   };
 
@@ -81,7 +106,7 @@ export default function CreateProfile() {
         ← Back
       </button>
 
-      <h2>Create Digital ID</h2>
+      <h2>Edit Digital ID</h2>
       <form onSubmit={handleSubmit}>
         <input
           placeholder="Full Name"
@@ -106,22 +131,6 @@ export default function CreateProfile() {
           <option>Female</option>
           <option>Other</option>
         </select>
-        <select value={type} onChange={(e) => setType(e.target.value)} required>
-          <option value="">Select Type</option>
-          <option>Senior</option>
-          <option>Child</option>
-          <option>Pet</option>
-          <option>Friend</option>
-          <option>Colleague</option>
-          <option>Me</option>
-          <option>Wife</option>
-          <option>Other</option>
-        </select>
-        <input
-          placeholder="Condition (e.g. Alzheimer's, Autism)"
-          value={condition}
-          onChange={(e) => setCondition(e.target.value)}
-        />
         <input
           placeholder="Address"
           value={address}
@@ -201,7 +210,7 @@ export default function CreateProfile() {
         </button>
         <br />
         <br />
-        <button type="submit">Create Profile</button>
+        <button type="submit">Update Profile</button>
       </form>
     </div>
   );

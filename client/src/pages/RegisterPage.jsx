@@ -1,48 +1,61 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../components/css/Auth.css";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
 
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
+    // Simple client-side validation
+    if (password !== confirmPassword) {
+      return setError("Passwords do not match");
+    }
+
     try {
-      const res = await axios.post("/api/auth/login", {
+      const res = await axios.post("/api/auth/register", {
+        name: fullName,
         email,
         password,
       });
 
-      // Save token to localStorage
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // Redirect to dashboard
       navigate("/dashboard");
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Login failed. Please try again."
-      );
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
   return (
     <div className="auth-page">
       <header className="auth-header">
-        <Link to="/">💙 CareConnect</Link>
+        <Link to="/" className="logo">
+          💙 CareConnect
+        </Link>
       </header>
       <div className="auth-box">
-        <h2>Welcome Back</h2>
-        <p>Sign in to your CareConnect account</p>
+        <h2>Create Account</h2>
+        <p>Join CareConnect to keep your loved ones safe</p>
+        <form onSubmit={handleRegister}>
+          <label>Full Name</label>
+          <input
+            type="text"
+            placeholder="Enter your full name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+          />
 
-        <form onSubmit={handleLogin}>
           <label>Email</label>
           <input
             type="email"
@@ -55,22 +68,30 @@ const Login = () => {
           <label>Password</label>
           <input
             type="password"
-            placeholder="Enter your password"
+            placeholder="Create a password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            placeholder="Confirm your password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
 
           {error && <p className="error-message">{error}</p>}
 
           <button type="submit" className="btn primary">
-            Sign In
+            Create Account
           </button>
         </form>
-
         <div className="auth-links">
           <p>
-            Don't have an account? <Link to="/register">Sign up</Link>
+            Already have an account? <Link to="/login">Sign in</Link>
           </p>
         </div>
       </div>
@@ -78,4 +99,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
