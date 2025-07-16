@@ -1,4 +1,4 @@
-// src/components/ui/card.jsx
+// card component
 import React from "react";
 
 export const Card = ({ children, className = "" }) => {

@@ -1,14 +1,16 @@
+//routing
+
 const express = require("express");
 const router = express.Router();
 const { register, login } = require("../controllers/authController");
 const User = require("../models/User");
 const Profile = require("../models/Profile");
 
-// ✅ Import the auth middleware
+//  Import the auth middleware
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/jwt");
 
-// ✅ Define the middleware inline here or import it from a separate file
+//  Define the middleware inline here or import it from a separate file
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ msg: "No token" });

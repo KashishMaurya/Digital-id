@@ -1,4 +1,5 @@
-// src/pages/Dashboard.jsx
+// dashboard - parent user
+
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -115,12 +116,15 @@ export default function Dashboard() {
       </html>
     `);
   };
-  
 
   return (
     <div className="dashboard-wrapper">
       <nav className="dashboard-navbar">
-        <div className="navbar-left">💙 CareConnect</div>
+        <div className="navbar-left">
+          <Link to="/" className="logo">
+            💙 CareConnect
+          </Link>
+        </div>
         <div className="navbar-right">
           <Link to="/settings" className="btn outline">
             ⚙️ Settings

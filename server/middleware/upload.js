@@ -1,17 +1,15 @@
-// Setup Multer for Photo Upload
+//cloudinary upload schema
 
 const multer = require("multer");
-const path = require("path");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinary");
 
-// Store files in /uploads with original name + timestamp
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "careconnect_profiles",
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    transformation: [{ width: 600, crop: "limit" }],
   },
 });
 

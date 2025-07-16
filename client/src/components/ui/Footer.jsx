@@ -1,3 +1,4 @@
+//footer component
 import React from "react";
 import "../css/NavbarFooter.css";
 

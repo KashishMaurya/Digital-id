@@ -1,3 +1,5 @@
+// create new profile
+
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +11,7 @@ export default function CreateProfile() {
   const [gender, setGender] = useState("");
   const [type, setType] = useState("");
   const [condition, setCondition] = useState("");
+  const [medications, setMedications] = useState("");
 
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
@@ -39,12 +42,18 @@ export default function CreateProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!photo) {
+      alert("Photo is required");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("age", age);
     formData.append("gender", gender);
     formData.append("type", type);
     formData.append("condition", condition);
+    formData.append("medications", medications); 
     formData.append("address", address);
     formData.append("phone", phone);
     formData.append("message", message);
@@ -123,6 +132,11 @@ export default function CreateProfile() {
           onChange={(e) => setCondition(e.target.value)}
         />
         <input
+          placeholder="Medications (if any)"
+          value={medications}
+          onChange={(e) => setMedications(e.target.value)}
+        />
+        <input
           placeholder="Address"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
@@ -139,6 +153,7 @@ export default function CreateProfile() {
           type="file"
           accept="image/*"
           onChange={(e) => setPhoto(e.target.files[0])}
+          required
         />
         <textarea
           placeholder="Message"
@@ -151,7 +166,7 @@ export default function CreateProfile() {
           onChange={(e) => setBloodGroup(e.target.value)}
         />
         <input
-          placeholder="Medical Conditions"
+          placeholder="Medical Notes"
           value={medical}
           onChange={(e) => setMedical(e.target.value)}
         />
@@ -169,6 +184,7 @@ export default function CreateProfile() {
           placeholder="Emergency Contact Phone"
           value={emergencyPhone}
           onChange={(e) => setEmergencyPhone(e.target.value)}
+          required
         />
         <input
           placeholder="Breed/Species"

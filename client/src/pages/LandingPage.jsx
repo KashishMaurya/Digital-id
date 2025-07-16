@@ -1,3 +1,5 @@
+//home page
+
 import React from "react";
 import "../components/css/LandingPage.css";
 import { Link } from "react-router-dom";
@@ -10,7 +12,7 @@ const features = [
   },
   {
     title: "Secure & Private",
-    desc: "Your family’s information is protected and only accessible through secure QR codes.",
+    desc: "Your family's information is protected and only accessible through secure QR codes.",
     icon: "🔒",
   },
   {
@@ -30,12 +32,12 @@ const features = [
   },
   {
     title: "Peace of Mind",
-    desc: "Know that help can find important information when it’s needed most.",
+    desc: "Know that help can find important information when it's needed most.",
     icon: "💙",
   },
 ];
 
-const useCases = ["Seniors", "Special Needs", "Children", "Pets"];
+const useCases = ["Seniors", "Special Needs", "Children", "Pets", "Plants", "Colleagues", "Relatives", "Friends"];
 
 const LandingPage = () => {
   return (

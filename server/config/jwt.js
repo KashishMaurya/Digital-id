@@ -1,3 +1,5 @@
+//jwt details
+
 require("dotenv").config();
 
 module.exports = {

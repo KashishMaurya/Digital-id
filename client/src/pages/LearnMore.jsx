@@ -1,4 +1,5 @@
-// src/pages/LearnMore.jsx
+// learn more - details about product
+
 import React from "react";
 import "../components/css/LearnMore.css";
 import Navbar from "../components/ui/Navbar";
@@ -71,7 +72,7 @@ const LearnMore = () => {
             <div className="feature">
               <h4>Privacy & Security</h4>
               <p>
-                Your family’s information is encrypted and stored securely. Only
+                Your family's information is encrypted and stored securely. Only
                 those with the QR code can access the information.
               </p>
             </div>
@@ -117,7 +118,7 @@ const LearnMore = () => {
               <h4>Elderly & Seniors</h4>
               <p>
                 Medical conditions, medications, emergency contacts, and care
-                instructions for seniors with dementia or Alzheimer’s.
+                instructions for seniors with dementia or Alzheimer's.
               </p>
             </div>
             <div className="benefit">
@@ -131,7 +132,7 @@ const LearnMore = () => {
               <h4>Children</h4>
               <p>
                 Parent contact information, allergies, and emergency
-                instructions for kids who can’t communicate these details.
+                instructions for kids who can't communicate these details.
               </p>
             </div>
             <div className="benefit">
@@ -154,7 +155,7 @@ const LearnMore = () => {
             <div className="why">
               <h4>Peace of Mind</h4>
               <p>
-                Know that help can access critical information when it’s needed
+                Know that help can access critical information when it's needed
                 most.
               </p>
             </div>

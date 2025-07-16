@@ -1,4 +1,4 @@
-// src/components/ui/button.jsx
+// button component
 import React from "react";
 
 export const Button = ({ children, className = '', variant = 'default', ...props }) => {

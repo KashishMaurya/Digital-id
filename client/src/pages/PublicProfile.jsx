@@ -1,3 +1,5 @@
+//profile card for dashboard
+
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -7,9 +9,7 @@ export default function PublicProfile() {
   const [profile, setProfile] = useState(null);
 
   const API_BASE =
-    window.location.hostname === "localhost"
-      ? "http://localhost:5000"
-      : "http://192.168.1.42:5000";
+    window.location.hostname === "http://localhost:5000";
 
       useEffect(() => {
         axios

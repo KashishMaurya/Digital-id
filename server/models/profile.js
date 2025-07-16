@@ -1,3 +1,5 @@
+//profile model
+
 const mongoose = require("mongoose");
 
 const profileSchema = new mongoose.Schema(
@@ -7,25 +9,42 @@ const profileSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    name: String,
-    age: String,
-    gender: String,
-    type: String, 
-    condition: String, 
-    address: String,
-    phone: String,
-    message: String,
-    photo: {
+    name: {
       type: String,
+      required: true,
+    },
+    age: {
+      type: String,
+      required: true,
+    },
+    gender: String,
+    type: String,
+    condition: String, 
+    medications: String, 
+    address: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    message: String,
+    photoUrl: {
+      type: String,
+      required: true,
       default: "",
-    }, 
+    },
     bloodGroup: String,
-    medical: String,
+    medical: String, 
     allergies: String,
     emergencyName: String,
-    emergencyPhone: String,
-    breed: String,
-    chipId: String,
+    emergencyPhone: {
+      type: String,
+      required: true,
+    },
+    breed: String, // for pets
+    chipId: String, // for pets
     customFields: [{ label: String, value: String }],
   },
   {

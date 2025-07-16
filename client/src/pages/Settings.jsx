@@ -1,3 +1,5 @@
+//settings page
+
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -66,7 +68,7 @@ export default function Settings() {
             fontWeight: 500,
           }}
         >
-          ➕ Add New Profile
+          + Add New Profile
         </button>
 
         <button

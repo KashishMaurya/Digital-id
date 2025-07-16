@@ -1,3 +1,5 @@
+// Edit existing profile
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,6 +12,10 @@ export default function EditProfile() {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
+  const [type, setType] = useState(""); 
+  const [condition, setCondition] = useState("");
+  const [medications, setMedications] = useState(""); 
+
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
@@ -35,6 +41,9 @@ export default function EditProfile() {
         setName(p.name || "");
         setAge(p.age || "");
         setGender(p.gender || "");
+        setType(p.type || "");
+        setCondition(p.condition || "");
+        setMedications(p.medications || "");
         setAddress(p.address || "");
         setPhone(p.phone || "");
         setMessage(p.message || "");
@@ -65,10 +74,14 @@ export default function EditProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("age", age);
     formData.append("gender", gender);
+    formData.append("type", type);
+    formData.append("condition", condition);
+    formData.append("medications", medications);
     formData.append("address", address);
     formData.append("phone", phone);
     formData.append("message", message);
@@ -131,6 +144,27 @@ export default function EditProfile() {
           <option>Female</option>
           <option>Other</option>
         </select>
+        <select value={type} onChange={(e) => setType(e.target.value)} required>
+          <option value="">Select Type</option>
+          <option>Senior</option>
+          <option>Child</option>
+          <option>Pet</option>
+          <option>Friend</option>
+          <option>Colleague</option>
+          <option>Me</option>
+          <option>Wife</option>
+          <option>Other</option>
+        </select>
+        <input
+          placeholder="Condition (e.g. Alzheimer's)"
+          value={condition}
+          onChange={(e) => setCondition(e.target.value)}
+        />
+        <input
+          placeholder="Medications (if any)"
+          value={medications}
+          onChange={(e) => setMedications(e.target.value)}
+        />
         <input
           placeholder="Address"
           value={address}
@@ -160,7 +194,7 @@ export default function EditProfile() {
           onChange={(e) => setBloodGroup(e.target.value)}
         />
         <input
-          placeholder="Medical Conditions"
+          placeholder="Medical Notes"
           value={medical}
           onChange={(e) => setMedical(e.target.value)}
         />
@@ -178,6 +212,7 @@ export default function EditProfile() {
           placeholder="Emergency Contact Phone"
           value={emergencyPhone}
           onChange={(e) => setEmergencyPhone(e.target.value)}
+          required
         />
         <input
           placeholder="Breed/Species"
