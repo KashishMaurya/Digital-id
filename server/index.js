@@ -11,42 +11,41 @@ const profileRoutes = require("./routes/profileRoutes");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allow frontend domains (adjust if you change Vercel URL)
+// Allow frontend domains (adjust if needed)
 const allowedOrigins = [
   "http://localhost:5173",
   "https://care-connect-pi-one.vercel.app",
 ];
 
-// CORS with preflight and credentials support
+// CORS
 app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
   })
 );
-app.options("*", cors()); // handle preflight requests
+app.options("*", cors()); // Handle preflight
 
-// Parse JSON
+// Middleware
 app.use(express.json());
 
 // Serve uploaded images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// API Routes
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/profiles", profileRoutes);
 
-// Ping route for uptime monitoring
+// Ping and test
 app.get("/ping", (req, res) => {
   res.send("pong");
 });
 
-// Test route
 app.get("/", (req, res) => {
   res.send("Digital ID API is running");
 });
 
-// MongoDB connection + server start
+// MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {

@@ -121,7 +121,6 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-wrapper">
-      console.log(profile)
       <nav className="dashboard-navbar">
         <div className="navbar-left">
           <Link to="/" className="logo">

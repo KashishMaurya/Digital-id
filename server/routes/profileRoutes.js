@@ -42,7 +42,6 @@ router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
       chipId,
     } = req.body;
 
-    // Server-side validation
     if (!name || !age || !phone || !address || !emergencyPhone) {
       return res.status(400).json({ msg: "Missing required fields" });
     }
@@ -97,6 +96,17 @@ router.get("/user", authMiddleware, async (req, res) => {
   }
 });
 
+// DELETE: All Profiles for User
+router.delete("/user/all", authMiddleware, async (req, res) => {
+  try {
+    await Profile.deleteMany({ userId: req.user.id });
+    res.json({ msg: "All profiles deleted" });
+  } catch (err) {
+    console.error("DELETE /user/all error:", err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
 // GET: Single Profile (Public View)
 router.get("/:id", async (req, res) => {
   try {
@@ -118,9 +128,7 @@ router.put("/:id", authMiddleware, upload.single("photo"), async (req, res) => {
     const existing = await Profile.findOne({ _id: profileId, userId });
     if (!existing) return res.status(404).json({ msg: "Profile not found" });
 
-    let updates = {
-      ...req.body,
-    };
+    let updates = { ...req.body };
 
     try {
       updates.customFields = req.body.customFields
@@ -145,7 +153,7 @@ router.put("/:id", authMiddleware, upload.single("photo"), async (req, res) => {
   }
 });
 
-//  DELETE: One Profile
+// DELETE: One Profile
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const profile = await Profile.findOneAndDelete({
@@ -158,17 +166,6 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     res.json({ msg: "Profile deleted successfully" });
   } catch (err) {
     console.error("DELETE /:id error:", err.message);
-    res.status(500).json({ msg: "Server error" });
-  }
-});
-
-//  DELETE: All Profiles for User
-router.delete("/user/all", authMiddleware, async (req, res) => {
-  try {
-    await Profile.deleteMany({ userId: req.user.id });
-    res.json({ msg: "All profiles deleted" });
-  } catch (err) {
-    console.error("DELETE /user/all error:", err.message);
     res.status(500).json({ msg: "Server error" });
   }
 });
