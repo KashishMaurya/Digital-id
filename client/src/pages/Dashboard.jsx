@@ -121,6 +121,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-wrapper">
+      console.log(profile)
       <nav className="dashboard-navbar">
         <div className="navbar-left">
           <Link to="/" className="logo">
@@ -154,7 +155,10 @@ export default function Dashboard() {
 
             <h3>{profile.name}</h3>
             <div className="profile-details">
-              Age: {profile.age} • {profile.condition || "No condition listed"}
+              Age: {profile.age}
+              {profile.condition &&
+                profile.condition.trim() !== "" &&
+                ` • ${profile.condition}`}
             </div>
 
             <div className="qr-wrapper">
