@@ -3,6 +3,7 @@
 import React from "react";
 import "../components/css/LandingPage.css";
 import { Link } from "react-router-dom";
+import Footer from "../components/ui/Footer"
 
 const features = [
   {
@@ -42,6 +43,7 @@ const useCases = ["Seniors", "Special Needs", "Children", "Pets", "Plants", "Col
 const LandingPage = () => {
   return (
     <div className="page">
+     
       <div className="header">
         <div className="header-content">
           <div className="header-text">
@@ -115,12 +117,7 @@ const LandingPage = () => {
         </Link>
       </section>
 
-      <footer className="footer">
-        <p>
-          &copy; {new Date().getFullYear()} CareConnect. All rights reserved.
-        </p>
-        <p>Keeping families connected and safe.</p>
-      </footer>
+      <Footer/>
     </div>
   );
 };

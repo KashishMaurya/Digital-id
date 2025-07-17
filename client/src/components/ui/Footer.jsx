@@ -6,7 +6,10 @@ const Footer = () => {
   return (
     <footer className="footer">
       <p>&copy; {new Date().getFullYear()} CareConnect. All rights reserved.</p>
-      <p>Keeping families connected and safe.</p>
+      <p>
+        Wishing safety and care for every soul — with compassion, Kashish Maurya
+        🌼
+      </p>
     </footer>
   );
 };

@@ -8,6 +8,7 @@ import EditProfile from "./pages/EditProfile";
 import LandingPage from "./pages/LandingPage";
 import LearnMore from "./pages/LearnMore";
 import Settings from "./pages/Settings";
+import ProfilePublicView from "./pages/ProfilePublicView";
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/create-profile" element={<CreateProfile />} />
-      <Route path="/profile/:id" element={<PublicProfile />} />
+      <Route path="/profile/:id" element={<ProfilePublicView />} />
       <Route path="/edit-profile/:id" element={<EditProfile />} />
       <Route path="/settings" element={<Settings />} />
     </Routes>
