@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
-const Profile = require("../models/Profile");
+const Profile = require("../models/profileID");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/jwt");
 
