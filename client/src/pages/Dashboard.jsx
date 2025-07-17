@@ -6,6 +6,8 @@ import axios from "axios";
 import { QRCodeCanvas } from "qrcode.react";
 import "../components/css/Dashboard.css";
 
+const API_BASE = import.meta.env.VITE_API_URL;
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [profiles, setProfiles] = useState([]);
@@ -18,7 +20,7 @@ export default function Dashboard() {
     }
 
     axios
-      .get("/api/profiles/user", {
+      .get(`${API_BASE}/api/profiles/user`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setProfiles(res.data))
@@ -29,7 +31,7 @@ export default function Dashboard() {
     if (!window.confirm("Delete this profile?")) return;
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(`/api/profiles/${id}`, {
+      await axios.delete(`${API_BASE}/api/profiles/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProfiles(profiles.filter((p) => p._id !== id));

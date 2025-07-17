@@ -3,13 +3,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function PublicProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
 
   const API_BASE =
-    window.location.hostname === "http://localhost:5000";
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : import.meta.env.VITE_API_URL;
 
       useEffect(() => {
         axios

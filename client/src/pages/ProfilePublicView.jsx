@@ -4,6 +4,8 @@ import axios from "axios";
 import { QRCodeCanvas } from "qrcode.react";
 import "../components/css/ProfilePublicView.css";
 
+const API_BASE = import.meta.env.VITE_API_URL;
+
 export default function ProfilePublicView() {
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
@@ -11,7 +13,7 @@ export default function ProfilePublicView() {
 
   useEffect(() => {
     axios
-      .get(`/api/profiles/${id}`)
+      .get(`${API_BASE}/api/profiles/${id}`)
       .then((res) => setProfile(res.data))
       .catch(() => setError("Profile not found"));
   }, [id]);

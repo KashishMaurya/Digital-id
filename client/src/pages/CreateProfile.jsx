@@ -69,12 +69,16 @@ export default function CreateProfile() {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("/api/profiles", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/profiles`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       alert("Profile created successfully!");
       navigate("/dashboard");

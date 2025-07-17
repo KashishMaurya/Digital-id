@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../components/css/Auth.css";
 
+const API_BASE = import.meta.env.VITE_API_URL;
+
 const Login = () => {
   const navigate = useNavigate();
 
@@ -16,7 +18,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("/api/auth/login", {
+      const res = await axios.post(`${API_BASE}/api/auth/login`, {
         email,
         password,
       });
