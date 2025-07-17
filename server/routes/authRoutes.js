@@ -4,7 +4,7 @@ const express = require("express");
 const router = express.Router();
 const { register, login } = require("../controllers/authController");
 const User = require("../models/headUser");
-const Profile = require("../models/Profile");
+const Profile = require("../models/profileID");
 
 //  Import the auth middleware
 const jwt = require("jsonwebtoken");
