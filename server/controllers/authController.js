@@ -1,6 +1,6 @@
 // Logic for handling auth
 
-const User = require("../models/User"); 
+const User = require("../models/headUser"); 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
