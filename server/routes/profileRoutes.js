@@ -3,7 +3,6 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
 const cloudinary = require("../config/cloudinary");
-const streamifier = require("streamifier");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/jwt");
 const Profile = require("../models/profileID");
@@ -18,22 +17,9 @@ const authMiddleware = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
+    console.error("Auth error:", err.message);
     return res.status(401).json({ msg: "Invalid token" });
   }
-};
-
-// Helper: upload file buffer to cloudinary
-const streamUpload = (buffer) => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder: "care-connect" },
-      (error, result) => {
-        if (result) resolve(result);
-        else reject(error);
-      }
-    );
-    streamifier.createReadStream(buffer).pipe(stream);
-  });
 };
 
 // Create Profile
@@ -65,16 +51,16 @@ router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
     let customFields = [];
     try {
       customFields = JSON.parse(req.body.customFields || "[]");
-    } catch {
+    } catch (err) {
+      console.error("customFields parse error:", err.message);
       return res.status(400).json({ msg: "Invalid customFields format" });
     }
 
-    if (!req.file) {
-      return res.status(400).json({ msg: "Photo is required" });
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ msg: "Photo upload failed" });
     }
 
-    const uploadResult = await streamUpload(req.file.buffer);
-    const photoUrl = uploadResult.secure_url;
+    const photoUrl = req.file.path;
 
     const profile = new Profile({
       userId: req.user.id,
@@ -87,7 +73,7 @@ router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
       address,
       phone,
       message,
-      photoUrl: req.file.path,
+      photoUrl,
       bloodGroup,
       medical,
       allergies,
@@ -101,7 +87,7 @@ router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
     await profile.save();
     res.status(201).json({ msg: "Profile created successfully", profile });
   } catch (err) {
-    console.error("❌ POST /api/profiles error:", err.message);
+    console.error("POST /api/profiles error:", err.message);
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
@@ -113,7 +99,7 @@ router.get("/user", authMiddleware, async (req, res) => {
     res.json(profiles);
   } catch (err) {
     console.error("GET /user error:", err.message);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 
@@ -124,7 +110,7 @@ router.delete("/user/all", authMiddleware, async (req, res) => {
     res.json({ msg: "All profiles deleted" });
   } catch (err) {
     console.error("DELETE /user/all error:", err.message);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 
@@ -136,7 +122,7 @@ router.get("/:id", async (req, res) => {
     res.json(profile);
   } catch (err) {
     console.error("GET /:id error:", err.message);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 
@@ -155,13 +141,13 @@ router.put("/:id", authMiddleware, upload.single("photo"), async (req, res) => {
       updates.customFields = req.body.customFields
         ? JSON.parse(req.body.customFields)
         : [];
-    } catch {
+    } catch (err) {
+      console.error("customFields parse error:", err.message);
       return res.status(400).json({ msg: "Invalid customFields format" });
     }
 
-    if (req.file) {
-      const uploadResult = await streamUpload(req.file.buffer);
-      updates.photoUrl = uploadResult.secure_url;
+    if (req.file?.path) {
+      updates.photoUrl = req.file.path;
     }
 
     const updatedProfile = await Profile.findByIdAndUpdate(profileId, updates, {
@@ -171,7 +157,7 @@ router.put("/:id", authMiddleware, upload.single("photo"), async (req, res) => {
     res.json({ msg: "Profile updated successfully", profile: updatedProfile });
   } catch (err) {
     console.error("PUT /:id error:", err.message);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 
@@ -188,7 +174,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     res.json({ msg: "Profile deleted successfully" });
   } catch (err) {
     console.error("DELETE /:id error:", err.message);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 

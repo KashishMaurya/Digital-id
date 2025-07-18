@@ -1,7 +1,5 @@
-// create new profile
-
 import { useState } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import "../components/css/CreateProfile.css";
 
@@ -67,25 +65,28 @@ export default function CreateProfile() {
     formData.append("chipId", chipId);
     formData.append("customFields", JSON.stringify(customFields));
 
+
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/profiles`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+
+      await axiosInstance.post("/api/profiles", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       alert("Profile created successfully!");
       navigate("/dashboard");
     } catch (err) {
-      console.error(err);
-      alert("Failed to create profile");
+      if (err.response?.data?.msg) {
+        alert("Error: " + err.response.data.msg);
+      } else {
+        alert("Failed to create profile");
+      }
+      console.error("Submit error:", err);
     }
+
   };
 
   return (

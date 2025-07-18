@@ -1,11 +1,9 @@
 // Edit existing profile
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 import "../components/css/CreateProfile.css";
-
-const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function EditProfile() {
   const { id } = useParams();
@@ -33,11 +31,8 @@ export default function EditProfile() {
   const [customFields, setCustomFields] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    axios
-      .get(`http://localhost:5000/api/profiles/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    axiosInstance
+      .get(`/api/profiles/${id}`)
       .then((res) => {
         const p = res.data;
         setName(p.name || "");
@@ -100,10 +95,8 @@ export default function EditProfile() {
     }
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5000/api/profiles/${id}`, formData, {
+      await axiosInstance.put(`/api/profiles/${id}`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });

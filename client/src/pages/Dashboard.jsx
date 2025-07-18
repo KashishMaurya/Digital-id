@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { QRCodeCanvas } from "qrcode.react";
 import "../components/css/Dashboard.css";
-
-const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -19,21 +17,22 @@ export default function Dashboard() {
       return;
     }
 
-    axios
-      .get(`${API_BASE}/api/profiles/user`, {
-        headers: { Authorization: `Bearer ${token}` },
+    axiosInstance
+      // .get("/api/profiles/user")
+      .get("/api/profiles/user", {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
       })
       .then((res) => setProfiles(res.data))
       .catch((err) => console.error("Error fetching profiles", err));
-  }, [navigate]);
+  }, [navigate]
+  );
 
   const handleDeleteProfile = async (id) => {
     if (!window.confirm("Delete this profile?")) return;
-    const token = localStorage.getItem("token");
     try {
-      await axios.delete(`${API_BASE}/api/profiles/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axiosInstance.delete(`/api/profiles/${id}`);
       setProfiles(profiles.filter((p) => p._id !== id));
     } catch {
       alert("Failed to delete");

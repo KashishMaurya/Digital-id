@@ -1,22 +1,18 @@
 // handles API calls for login/register
 
-import axios from "axios";
-
-const API_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
+import axiosInstance from "./axiosInstance";
 
 export const login = async (email, password) => {
-  const res = await axios.post(`${API_URL}/login`, { email, password });
+  const res = await axiosInstance.post("/api/auth/login", { email, password });
   return res.data;
 };
 
 export const register = async (email, password) => {
-  const res = await axios.post(`${API_URL}/register`, { email, password });
+  const res = await axiosInstance.post("/api/auth/register", { email, password });
   return res.data;
 };
 
-export const getCurrentUser = async (token) => {
-  const res = await axios.get(`${API_URL}/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getCurrentUser = async () => {
+  const res = await axiosInstance.get("/api/auth/me");
   return res.data;
 };

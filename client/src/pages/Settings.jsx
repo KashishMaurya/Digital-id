@@ -1,8 +1,7 @@
 //settings page
 
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
-const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -18,11 +17,8 @@ export default function Settings() {
     );
     if (!confirmDelete) return;
 
-    const token = localStorage.getItem("token");
     try {
-      await axios.delete(`${API_BASE}/api/auth/delete`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axiosInstance.delete("/api/auth/delete");
       alert("Account deleted");
       localStorage.clear();
       navigate("/");

@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import "../components/css/Auth.css";
-
-const API_BASE = import.meta.env.VITE_API_URL;
 
 const Register = () => {
   const navigate = useNavigate();
@@ -26,7 +24,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${API_BASE}/api/auth/register`, {
+      const res = await axiosInstance.post("/api/auth/register", {
         name: fullName,
         email,
         password,
