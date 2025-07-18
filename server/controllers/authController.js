@@ -15,11 +15,14 @@ exports.register = async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password: hashed });
 
-    res.json({ msg: "Registered successfully" });
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+
+    res.json({ token, user: { id: user._id, email: user.email } });
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }
 };
+
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -45,7 +48,7 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });
     console.log("Token generated");
 
-    res.json({ token });
+    res.json({ token, user: { id: user._id, email: user.email } });
   } catch (err) {
     console.error("Login Error:", err.message);
     res.status(500).json({ msg: "Server error" });
