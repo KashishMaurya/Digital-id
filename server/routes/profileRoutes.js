@@ -2,14 +2,16 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
-const Profile = require("../models/profileID");
+const cloudinary = require("../config/cloudinary");
+const streamifier = require("streamifier");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/jwt");
+const Profile = require("../models/profileID");
 
 // Auth middleware
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ msg: "No token" });
+  if (!token) return res.status(401).json({ msg: "No token provided" });
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -20,7 +22,21 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// POST: Create Profile
+// Helper: upload file buffer to cloudinary
+const streamUpload = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "care-connect" },
+      (error, result) => {
+        if (result) resolve(result);
+        else reject(error);
+      }
+    );
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
+
+// Create Profile
 router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
     const {
@@ -53,7 +69,12 @@ router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
       return res.status(400).json({ msg: "Invalid customFields format" });
     }
 
-    const photoUrl = req.file?.path || "";
+    if (!req.file) {
+      return res.status(400).json({ msg: "Photo is required" });
+    }
+
+    const uploadResult = await streamUpload(req.file.buffer);
+    const photoUrl = uploadResult.secure_url;
 
     const profile = new Profile({
       userId: req.user.id,
@@ -66,7 +87,7 @@ router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
       address,
       phone,
       message,
-      photoUrl,
+      photoUrl: req.file.path,
       bloodGroup,
       medical,
       allergies,
@@ -78,14 +99,14 @@ router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
     });
 
     await profile.save();
-    res.json({ msg: "Profile created successfully", profile });
+    res.status(201).json({ msg: "Profile created successfully", profile });
   } catch (err) {
-    console.error("POST /api/profiles error:", err);
-    res.status(500).json({ msg: "Server error" });
+    console.error("❌ POST /api/profiles error:", err.message);
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
 
-// GET: All Profiles for Current User
+// Get All Profiles (for current user)
 router.get("/user", authMiddleware, async (req, res) => {
   try {
     const profiles = await Profile.find({ userId: req.user.id });
@@ -96,7 +117,7 @@ router.get("/user", authMiddleware, async (req, res) => {
   }
 });
 
-// DELETE: All Profiles for User
+// Delete All Profiles for a user
 router.delete("/user/all", authMiddleware, async (req, res) => {
   try {
     await Profile.deleteMany({ userId: req.user.id });
@@ -107,19 +128,19 @@ router.delete("/user/all", authMiddleware, async (req, res) => {
   }
 });
 
-// GET: Single Profile (Public View)
+// Get single profile by ID
 router.get("/:id", async (req, res) => {
   try {
     const profile = await Profile.findById(req.params.id);
-    if (!profile) return res.status(404).json({ msg: "Not found" });
+    if (!profile) return res.status(404).json({ msg: "Profile not found" });
     res.json(profile);
   } catch (err) {
     console.error("GET /:id error:", err.message);
-    res.status(500).json({ msg: "Error" });
+    res.status(500).json({ msg: "Server error" });
   }
 });
 
-// PUT: Update Profile
+// Update profile
 router.put("/:id", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
     const profileId = req.params.id;
@@ -139,7 +160,8 @@ router.put("/:id", authMiddleware, upload.single("photo"), async (req, res) => {
     }
 
     if (req.file) {
-      updates.photoUrl = req.file.path;
+      const uploadResult = await streamUpload(req.file.buffer);
+      updates.photoUrl = uploadResult.secure_url;
     }
 
     const updatedProfile = await Profile.findByIdAndUpdate(profileId, updates, {
@@ -153,7 +175,7 @@ router.put("/:id", authMiddleware, upload.single("photo"), async (req, res) => {
   }
 });
 
-// DELETE: One Profile
+// Delete one profile
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const profile = await Profile.findOneAndDelete({
