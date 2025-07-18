@@ -1,9 +1,8 @@
-// register form
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../components/css/Auth.css";
+
 const API_BASE = import.meta.env.VITE_API_URL;
 
 const Register = () => {
@@ -14,14 +13,17 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // NEW
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError("");
 
-    // Simple client-side validation
     if (password !== confirmPassword) {
       return setError("Passwords do not match");
     }
+
+    setLoading(true);
 
     try {
       const res = await axios.post(`${API_BASE}/api/auth/register`, {
@@ -36,6 +38,7 @@ const Register = () => {
       navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
+      setLoading(false);
     }
   };
 
@@ -87,9 +90,14 @@ const Register = () => {
           />
 
           {error && <p className="error-message">{error}</p>}
+          {loading && (
+            <p className="loading-message">
+              Creating your account, please wait...
+            </p>
+          )}
 
-          <button type="submit" className="btn primary">
-            Create Account
+          <button type="submit" className="btn primary" disabled={loading}>
+            {loading ? "Loading..." : "Create Account"}
           </button>
         </form>
         <div className="auth-links">

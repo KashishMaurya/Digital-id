@@ -1,4 +1,5 @@
-/* css for login/ register page */
+/* css for login/ register page
+ */
 .auth-page {
   min-height: 100vh;
   display: flex;
@@ -102,4 +103,11 @@
 
 .auth-links a:hover {
   text-decoration: underline;
+}
+
+.loading-message {
+  color: #555;
+  font-size: 0.95rem;
+  margin: 10px 0;
+  text-align: center;
 }
