@@ -17,7 +17,7 @@ const EmailPassword = require("supertokens-node/recipe/emailpassword");
 supertokens.init({
   framework: "express",
   supertokens: {
-    connectionURI: "https://try.supertokens.com", // replace with your own instance in production
+    connectionURI: "https://try.supertokens.com", // Replace in production
   },
   appInfo: {
     appName: "CareConnect",
@@ -32,23 +32,14 @@ supertokens.init({
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5173",
   "https://digital-id-three.vercel.app",
 ];
 
-// CORS options object (used in both places)
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = [
-      "http://localhost:5173",
-      "https://digital-id-three.vercel.app",
-    ];
-
-    // Log exact origin
     console.log("Request origin:", origin);
-
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -61,19 +52,18 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
 
+// Allow preflight requests for SuperTokens endpoints
+app.options("/auth/*", cors(corsOptions));
 
-
-// CORS middleware for normal requests
+// Apply CORS and session middleware (in correct order)
 app.use(cors(corsOptions));
-
-// JSON parser and SuperTokens session middleware
 app.use(express.json());
-app.use(middleware());
+app.use(middleware()); // SuperTokens
 
-// Static file hosting (for profile images)
+// Static assets
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// API routes
+//custom routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/profiles", require("./routes/profileRoutes"));
 
@@ -82,10 +72,10 @@ app.get("/", (req, res) => {
   res.send("Digital ID API is running");
 });
 
-// SuperTokens error handler
+// SuperTokens error handler – must be last
 app.use(errorHandler());
 
-// MongoDB connection and server start
+// Connect to MongoDB and start server
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
