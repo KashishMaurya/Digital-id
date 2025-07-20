@@ -4,54 +4,78 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 
-// Routes
-const authRoutes = require("./routes/authRoutes");
-const profileRoutes = require("./routes/profileRoutes");
+// SuperTokens setup
+const supertokens = require("supertokens-node");
+const {
+  middleware,
+  errorHandler,
+} = require("supertokens-node/framework/express");
+const { getAllCORSHeaders } = require("supertokens-node");
+const Session = require("supertokens-node/recipe/session");
+const EmailPassword = require("supertokens-node/recipe/emailpassword");
+
+supertokens.init({
+  framework: "express",
+  supertokens: {
+    connectionURI: "https://try.supertokens.com", // replace for production
+  },
+  appInfo: {
+    appName: "CareConnect",
+    apiDomain: "https://care-connect-iq7u.onrender.com",
+    apiBasePath: "/auth",
+    websiteDomain: "care-connect-pi-one.vercel.app",
+    websiteBasePath: "/auth",
+  },
+  recipeList: [EmailPassword.init(), Session.init()],
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allow frontend domains (adjust if needed)
+// CORS setup
 const allowedOrigins = [
   "http://localhost:5173",
   "https://care-connect-pi-one.vercel.app",
 ];
 
-// CORS
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
+    allowedHeaders: ["content-type", ...getAllCORSHeaders()],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
-app.options("*", cors()); // Handle preflight
 
-// Middleware
 app.use(express.json());
-
-// Serve uploaded images
+app.use(middleware()); // SuperTokens middleware
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/profiles", profileRoutes);
-
-// Ping and test
-app.get("/ping", (req, res) => {
-  res.send("pong");
-});
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/profiles", require("./routes/profileRoutes"));
 
 app.get("/", (req, res) => {
-  res.send("Digital ID API is running");
+  res.send("🚀 Digital ID API is running");
 });
+
+app.use(errorHandler()); // SuperTokens error handler
 
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    console.log("MongoDB connected");
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    console.log(" MongoDB connected");
+    app.listen(PORT, () =>
+      console.log(`Server running at http://localhost:${PORT}`)
+    );
   })
   .catch((err) => {
-    console.error("MongoDB connection failed:", err.message);
+    console.error(" MongoDB connection failed:", err.message);
   });

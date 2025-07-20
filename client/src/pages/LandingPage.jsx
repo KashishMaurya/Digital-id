@@ -1,9 +1,10 @@
-//home page
-
 import React from "react";
 import "../components/css/LandingPage.css";
 import { Link } from "react-router-dom";
-import Footer from "../components/ui/Footer"
+import Footer from "../components/ui/Footer";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { doesSessionExist } from "supertokens-auth-react/recipe/session";
 
 const features = [
   {
@@ -38,21 +39,47 @@ const features = [
   },
 ];
 
-const useCases = ["Seniors", "Special Needs", "Children", "Pets", "Plants", "Colleagues", "Relatives", "Friends"];
+const useCases = [
+  "Seniors",
+  "Special Needs",
+  "Children",
+  "Pets",
+  "Plants",
+  "Colleagues",
+  "Relatives",
+  "Friends",
+];
 
-const LandingPage = () => {
+export default function LandingPage() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      async function checkSession() {
+        if (await doesSessionExist()) {
+          navigate("/dashboard");
+        }
+      }
+      checkSession();
+    }, []);
+
   return (
     <div className="page">
-     
+      {/* Header Section */}
       <div className="header">
         <div className="header-content">
           <div className="header-text">
             <h1>💙 CareConnect</h1>
             <div className="header-buttons">
-              <Link to="/login" className="btn outline large">
+              <Link
+                to="/auth?redirectToPath=/dashboard"
+                className="btn outline large"
+              >
                 Login
               </Link>
-              <Link to="/register" className="btn primary large">
+              <Link
+                to="/auth?redirectToPath=/dashboard"
+                className="btn primary large"
+              >
                 Register
               </Link>
             </div>
@@ -67,6 +94,7 @@ const LandingPage = () => {
         </div>
       </div>
 
+      {/* Hero Section */}
       <section className="hero">
         <div className="hero-text">
           <h2>Keep Your Loved Ones Safe</h2>
@@ -76,8 +104,11 @@ const LandingPage = () => {
             information instantly when it matters most.
           </p>
           <div className="hero-actions">
-            <Link to="/register" className="btn primary large">
-              Get Started for Free
+            <Link
+              to="/auth?redirectToPath=/dashboard"
+              className="btn primary large"
+            >
+              Get Started for free
             </Link>
             <Link to="/learn-more" className="btn outline large">
               Learn More
@@ -86,6 +117,7 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Features Section */}
       <section className="features">
         <h3>Why Choose CareConnect?</h3>
         <p className="features-subtext">
@@ -103,6 +135,7 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Use Cases Section */}
       <section className="use-cases">
         <h1>Perfect For</h1>
         <div className="use-case-grid">
@@ -112,14 +145,16 @@ const LandingPage = () => {
             </div>
           ))}
         </div>
-        <Link to="/register" className="btn primary large">
+        <Link
+          to="/auth?redirectToPath=/dashboard"
+          className="btn primary large"
+        >
           Create Your First Profile
         </Link>
       </section>
 
-      <Footer/>
+      {/* Footer */}
+      <Footer />
     </div>
   );
-};
-
-export default LandingPage;
+}

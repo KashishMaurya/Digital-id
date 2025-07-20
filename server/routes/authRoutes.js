@@ -1,46 +1,23 @@
-//routing
-
 const express = require("express");
 const router = express.Router();
-const { register, login } = require("../controllers/authController");
+const {
+  verifySession,
+} = require("supertokens-node/recipe/session/framework/express");
+
 const User = require("../models/headUser");
 const Profile = require("../models/profileID");
 
-//  Import the auth middleware
-const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../config/jwt");
-
-//  Define the middleware inline here or import it from a separate file
-const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ msg: "No token" });
-
+// DELETE user account and related profiles
+router.delete("/delete", verifySession(), async (req, res) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(401).json({ msg: "Invalid token" });
-  }
-};
+    const userId = req.session.getUserId(); // from SuperTokens
 
-// Register
-router.post("/register", register);
-
-// Login
-router.post("/login", login);
-
-// Delete User + All Profiles
-router.delete("/delete", authMiddleware, async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    await Profile.deleteMany({ userId }); // delete profiles
-    await User.findByIdAndDelete(userId); // delete user
+    await Profile.deleteMany({ userId });
+    await User.findByIdAndDelete(userId); // assumes SuperTokens UUID is used as _id
 
     res.json({ msg: "User account and all profiles deleted" });
   } catch (err) {
-    console.error(err);
+    console.error(" Delete user error:", err);
     res.status(500).json({ msg: "Server error" });
   }
 });

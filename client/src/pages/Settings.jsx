@@ -1,14 +1,17 @@
-//settings page
-
-import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import Session from "supertokens-auth-react/recipe/session"; 
+import axiosInstance from "../api/axiosInstance";
 
 export default function Settings() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await Session.signOut(); 
+      navigate("/"); 
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -20,7 +23,8 @@ export default function Settings() {
     try {
       await axiosInstance.delete("/api/auth/delete");
       alert("Account deleted");
-      localStorage.clear();
+      await Session.signOut(); 
+       alert("Account deleted successfully");
       navigate("/");
     } catch (err) {
       alert("Failed to delete account");

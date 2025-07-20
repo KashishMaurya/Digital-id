@@ -5,7 +5,7 @@ import "../components/css/LearnMore.css";
 import Navbar from "../components/ui/Navbar";
 import Footer from "../components/ui/Footer";
 
-const LearnMore = () => {
+export default function LearnMore() {
   return (
     <>
       <Navbar />
@@ -182,4 +182,3 @@ const LearnMore = () => {
   );
 };
 
-export default LearnMore;

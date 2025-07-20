@@ -1,20 +1,20 @@
-// Edit existing profile
-
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 import "../components/css/CreateProfile.css";
+import { useSessionContext } from "supertokens-auth-react/recipe/session";
 
 export default function EditProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { loading, doesSessionExist } = useSessionContext();
 
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
-  const [type, setType] = useState(""); 
+  const [type, setType] = useState("");
   const [condition, setCondition] = useState("");
-  const [medications, setMedications] = useState(""); 
+  const [medications, setMedications] = useState("");
 
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
@@ -31,6 +31,12 @@ export default function EditProfile() {
   const [customFields, setCustomFields] = useState([]);
 
   useEffect(() => {
+    if (loading) return;
+    if (!doesSessionExist) {
+      navigate("/auth");
+      return;
+    }
+
     axiosInstance
       .get(`/api/profiles/${id}`)
       .then((res) => {
@@ -53,11 +59,11 @@ export default function EditProfile() {
         setChipId(p.chipId || "");
         setCustomFields(p.customFields || []);
       })
-      .catch((err) => {
+      .catch(() => {
         alert("Failed to load profile");
         navigate("/dashboard");
       });
-  }, [id, navigate]);
+  }, [id, loading, doesSessionExist, navigate]);
 
   const handleAddField = () => {
     setCustomFields([...customFields, { label: "", value: "" }]);
@@ -108,12 +114,14 @@ export default function EditProfile() {
     }
   };
 
+  if (loading) return <p>Loading session...</p>;
+  if (!doesSessionExist) return null;
+
   return (
     <div className="create-profile-container">
       <button className="back-button" onClick={() => navigate(-1)}>
         ← Back
       </button>
-
       <h2>Edit Digital ID</h2>
       <form onSubmit={handleSubmit}>
         <input
@@ -151,12 +159,12 @@ export default function EditProfile() {
           <option>Other</option>
         </select>
         <input
-          placeholder="Condition (e.g. Alzheimer's)"
+          placeholder="Condition"
           value={condition}
           onChange={(e) => setCondition(e.target.value)}
         />
         <input
-          placeholder="Medications (if any)"
+          placeholder="Medications"
           value={medications}
           onChange={(e) => setMedications(e.target.value)}
         />

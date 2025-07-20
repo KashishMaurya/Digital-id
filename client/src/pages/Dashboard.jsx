@@ -1,33 +1,29 @@
-// dashboard - parent user
-
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { QRCodeCanvas } from "qrcode.react";
 import "../components/css/Dashboard.css";
+import { useSessionContext } from "supertokens-auth-react/recipe/session";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [profiles, setProfiles] = useState([]);
 
+  const { loading, doesSessionExist } = useSessionContext();
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
+    if (loading) return;
+
+    if (!doesSessionExist) {
+      navigate("/auth");
       return;
     }
 
     axiosInstance
-      // .get("/api/profiles/user")
-      .get("/api/profiles/user", {
-        headers: {
-          Authorization: `Bearer ${token}`, 
-        },
-      })
+      .get("/api/profiles/user")
       .then((res) => setProfiles(res.data))
       .catch((err) => console.error("Error fetching profiles", err));
-  }, [navigate]
-  );
+  }, [loading, doesSessionExist, navigate]);
 
   const handleDeleteProfile = async (id) => {
     if (!window.confirm("Delete this profile?")) return;
@@ -99,14 +95,10 @@ export default function Dashboard() {
                 ? `<img src="${profile.photoUrl}" alt="Photo" class="photo" />`
                 : ""
             }
-  
-            <div class="info">
-              ${infoHTML}
-            </div>
-  
+            <div class="info">${infoHTML}</div>
             <canvas id="qrCanvas"></canvas>
           </div>
-  
+
           <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
           <script>
             QRCode.toCanvas(document.getElementById("qrCanvas"), "${

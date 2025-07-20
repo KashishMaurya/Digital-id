@@ -2,8 +2,12 @@ import { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import "../components/css/CreateProfile.css";
+import { useSessionContext } from "supertokens-auth-react/recipe/session";
 
 export default function CreateProfile() {
+  const navigate = useNavigate();
+  const { doesSessionExist, loading } = useSessionContext();
+
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
@@ -25,7 +29,6 @@ export default function CreateProfile() {
   const [chipId, setChipId] = useState("");
 
   const [customFields, setCustomFields] = useState([{ label: "", value: "" }]);
-  const navigate = useNavigate();
 
   const handleAddField = () => {
     setCustomFields([...customFields, { label: "", value: "" }]);
@@ -51,7 +54,7 @@ export default function CreateProfile() {
     formData.append("gender", gender);
     formData.append("type", type);
     formData.append("condition", condition);
-    formData.append("medications", medications); 
+    formData.append("medications", medications);
     formData.append("address", address);
     formData.append("phone", phone);
     formData.append("message", message);
@@ -65,14 +68,10 @@ export default function CreateProfile() {
     formData.append("chipId", chipId);
     formData.append("customFields", JSON.stringify(customFields));
 
-
     try {
-      const token = localStorage.getItem("token");
-
       await axiosInstance.post("/api/profiles", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -86,8 +85,13 @@ export default function CreateProfile() {
       }
       console.error("Submit error:", err);
     }
-
   };
+
+  if (loading) return <p>Loading session...</p>;
+  if (!doesSessionExist) {
+    navigate("/auth");
+    return null;
+  }
 
   return (
     <div className="create-profile-container">
@@ -98,13 +102,13 @@ export default function CreateProfile() {
       <h2>Create Digital ID</h2>
       <form onSubmit={handleSubmit}>
         <input
-          placeholder="Full Name"
+          placeholder="Full Name*"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
         <input
-          placeholder="Age"
+          placeholder="Age*"
           type="number"
           value={age}
           onChange={(e) => setAge(e.target.value)}
@@ -115,13 +119,13 @@ export default function CreateProfile() {
           onChange={(e) => setGender(e.target.value)}
           required
         >
-          <option value="">Select Gender</option>
+          <option value="">Select Gender*</option>
           <option>Male</option>
           <option>Female</option>
           <option>Other</option>
         </select>
         <select value={type} onChange={(e) => setType(e.target.value)} required>
-          <option value="">Select Type</option>
+          <option value="">Select Type*</option>
           <option>Senior</option>
           <option>Child</option>
           <option>Pet</option>
@@ -142,13 +146,13 @@ export default function CreateProfile() {
           onChange={(e) => setMedications(e.target.value)}
         />
         <input
-          placeholder="Address"
+          placeholder="Address*"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           required
         />
         <input
-          placeholder="Phone Number"
+          placeholder="Phone Number*"
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
@@ -181,12 +185,12 @@ export default function CreateProfile() {
           onChange={(e) => setAllergies(e.target.value)}
         />
         <input
-          placeholder="Emergency Contact Name"
+          placeholder="Emergency Contact Name*"
           value={emergencyName}
           onChange={(e) => setEmergencyName(e.target.value)}
         />
         <input
-          placeholder="Emergency Contact Phone"
+          placeholder="Emergency Contact Phone*"
           value={emergencyPhone}
           onChange={(e) => setEmergencyPhone(e.target.value)}
           required

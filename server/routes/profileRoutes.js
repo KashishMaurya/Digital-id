@@ -1,29 +1,15 @@
-require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
 const cloudinary = require("../config/cloudinary");
-const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../config/jwt");
 const Profile = require("../models/profileID");
 
-// Auth middleware
-const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ msg: "No token provided" });
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    console.error("Auth error:", err.message);
-    return res.status(401).json({ msg: "Invalid token" });
-  }
-};
+const {
+  verifySession,
+} = require("supertokens-node/recipe/session/framework/express");
 
 // Create Profile
-router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
+router.post("/", verifySession(), upload.single("photo"), async (req, res) => {
   try {
     const {
       name,
@@ -63,7 +49,7 @@ router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
     const photoUrl = req.file.path;
 
     const profile = new Profile({
-      userId: req.user.id,
+      userId: req.session.getUserId(), // From SuperTokens session
       name,
       age,
       gender,
@@ -92,10 +78,11 @@ router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
   }
 });
 
-// Get All Profiles (for current user)
-router.get("/user", authMiddleware, async (req, res) => {
+// Get all profiles for logged-in user
+router.get("/user", verifySession(), async (req, res) => {
   try {
-    const profiles = await Profile.find({ userId: req.user.id });
+    const userId = req.session.getUserId();
+    const profiles = await Profile.find({ userId });
     res.json(profiles);
   } catch (err) {
     console.error("GET /user error:", err.message);
@@ -103,10 +90,11 @@ router.get("/user", authMiddleware, async (req, res) => {
   }
 });
 
-// Delete All Profiles for a user
-router.delete("/user/all", authMiddleware, async (req, res) => {
+// Delete all profiles for user
+router.delete("/user/all", verifySession(), async (req, res) => {
   try {
-    await Profile.deleteMany({ userId: req.user.id });
+    const userId = req.session.getUserId();
+    await Profile.deleteMany({ userId });
     res.json({ msg: "All profiles deleted" });
   } catch (err) {
     console.error("DELETE /user/all error:", err.message);
@@ -114,7 +102,7 @@ router.delete("/user/all", authMiddleware, async (req, res) => {
   }
 });
 
-// Get single profile by ID
+// Get one profile (public)
 router.get("/:id", async (req, res) => {
   try {
     const profile = await Profile.findById(req.params.id);
@@ -127,46 +115,59 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update profile
-router.put("/:id", authMiddleware, upload.single("photo"), async (req, res) => {
-  try {
-    const profileId = req.params.id;
-    const userId = req.user.id;
-
-    const existing = await Profile.findOne({ _id: profileId, userId });
-    if (!existing) return res.status(404).json({ msg: "Profile not found" });
-
-    let updates = { ...req.body };
-
+router.put(
+  "/:id",
+  verifySession(),
+  upload.single("photo"),
+  async (req, res) => {
     try {
-      updates.customFields = req.body.customFields
-        ? JSON.parse(req.body.customFields)
-        : [];
+      const profileId = req.params.id;
+      const userId = req.session.getUserId();
+
+      const existing = await Profile.findOne({ _id: profileId, userId });
+      if (!existing) return res.status(404).json({ msg: "Profile not found" });
+
+      let updates = { ...req.body };
+
+      try {
+        updates.customFields = req.body.customFields
+          ? JSON.parse(req.body.customFields)
+          : [];
+      } catch (err) {
+        console.error("customFields parse error:", err.message);
+        return res.status(400).json({ msg: "Invalid customFields format" });
+      }
+
+      if (req.file?.path) {
+        updates.photoUrl = req.file.path;
+      }
+
+      const updatedProfile = await Profile.findByIdAndUpdate(
+        profileId,
+        updates,
+        {
+          new: true,
+        }
+      );
+
+      res.json({
+        msg: "Profile updated successfully",
+        profile: updatedProfile,
+      });
     } catch (err) {
-      console.error("customFields parse error:", err.message);
-      return res.status(400).json({ msg: "Invalid customFields format" });
+      console.error("PUT /:id error:", err.message);
+      res.status(500).json({ msg: "Server error", error: err.message });
     }
-
-    if (req.file?.path) {
-      updates.photoUrl = req.file.path;
-    }
-
-    const updatedProfile = await Profile.findByIdAndUpdate(profileId, updates, {
-      new: true,
-    });
-
-    res.json({ msg: "Profile updated successfully", profile: updatedProfile });
-  } catch (err) {
-    console.error("PUT /:id error:", err.message);
-    res.status(500).json({ msg: "Server error", error: err.message });
   }
-});
+);
 
 // Delete one profile
-router.delete("/:id", authMiddleware, async (req, res) => {
+router.delete("/:id", verifySession(), async (req, res) => {
   try {
+    const userId = req.session.getUserId();
     const profile = await Profile.findOneAndDelete({
       _id: req.params.id,
-      userId: req.user.id,
+      userId,
     });
 
     if (!profile) return res.status(404).json({ msg: "Profile not found" });
