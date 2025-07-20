@@ -23,7 +23,7 @@ supertokens.init({
     appName: "CareConnect",
     apiDomain: "https://care-connect-iq7u.onrender.com",
     apiBasePath: "/auth",
-    websiteDomain: "care-connect-pi-one.vercel.app",
+    websiteDomain: "digital-id-three.vercel.app",
     websiteBasePath: "/auth",
   },
   recipeList: [EmailPassword.init(), Session.init()],
@@ -33,10 +33,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // CORS setup
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://care-connect-pi-one.vercel.app",
-];
+const allowedOrigins = ["http://localhost:5173", "digital-id-three.vercel.app"];
 
 app.use(
   cors({
