@@ -41,9 +41,18 @@ const allowedOrigins = [
 // CORS options object (used in both places)
 const corsOptions = {
   origin: function (origin, callback) {
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "https://digital-id-three.vercel.app",
+    ];
+
+    // Log exact origin
+    console.log("🔵 Request origin:", origin);
+
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.warn("❌ Blocked by CORS:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
@@ -52,11 +61,10 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
 
+
+
 // CORS middleware for normal requests
 app.use(cors(corsOptions));
-
-// CORS preflight support
-app.options("*", cors(corsOptions));
 
 // JSON parser and SuperTokens session middleware
 app.use(express.json());
