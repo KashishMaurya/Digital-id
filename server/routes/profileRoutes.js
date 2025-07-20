@@ -11,8 +11,6 @@ const {
 // Create Profile
 router.post("/", verifySession(), upload.single("photo"), async (req, res) => {
   try {
-    console.log("📥 POST /api/profiles called");
-
     const {
       name,
       age,
@@ -32,27 +30,7 @@ router.post("/", verifySession(), upload.single("photo"), async (req, res) => {
       chipId,
     } = req.body;
 
-    console.log("📦 Received form fields:", {
-      name,
-      age,
-      gender,
-      type,
-      condition,
-      medications,
-      address,
-      phone,
-      message,
-      bloodGroup,
-      medical,
-      allergies,
-      emergencyName,
-      emergencyPhone,
-      breed,
-      chipId,
-    });
-
     if (!name || !age || !phone || !address || !emergencyPhone) {
-      console.warn("⚠️ Missing required fields");
       return res.status(400).json({ msg: "Missing required fields" });
     }
 
@@ -60,20 +38,15 @@ router.post("/", verifySession(), upload.single("photo"), async (req, res) => {
     try {
       customFields = JSON.parse(req.body.customFields || "[]");
     } catch (err) {
-      console.error("❌ customFields parse error:", err.message);
       return res.status(400).json({ msg: "Invalid customFields format" });
     }
 
     if (!req.file) {
-      console.warn("⚠️ No photo file received");
       return res.status(400).json({ msg: "Photo upload failed" });
     }
 
     const photoUrl = req.file.path || req.file.secure_url;
-    console.log("📸 Uploaded photo URL:", photoUrl);
-
     const userId = req.session.getUserId();
-    console.log("🧑‍💻 User ID from session:", userId);
 
     const profile = new Profile({
       userId,
@@ -98,11 +71,8 @@ router.post("/", verifySession(), upload.single("photo"), async (req, res) => {
     });
 
     await profile.save();
-    console.log("✅ Profile saved");
-
     res.status(201).json({ msg: "Profile created successfully", profile });
   } catch (err) {
-    console.error("❌ POST /api/profiles error:", err);
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
@@ -114,7 +84,6 @@ router.get("/user", verifySession(), async (req, res) => {
     const profiles = await Profile.find({ userId });
     res.json(profiles);
   } catch (err) {
-    console.error("❌ GET /user error:", err.message);
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
@@ -126,7 +95,6 @@ router.delete("/user/all", verifySession(), async (req, res) => {
     await Profile.deleteMany({ userId });
     res.json({ msg: "All profiles deleted" });
   } catch (err) {
-    console.error("❌ DELETE /user/all error:", err.message);
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
@@ -138,7 +106,6 @@ router.get("/:id", async (req, res) => {
     if (!profile) return res.status(404).json({ msg: "Profile not found" });
     res.json(profile);
   } catch (err) {
-    console.error("❌ GET /:id error:", err.message);
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
@@ -163,7 +130,6 @@ router.put(
           ? JSON.parse(req.body.customFields)
           : [];
       } catch (err) {
-        console.error("❌ customFields parse error:", err.message);
         return res.status(400).json({ msg: "Invalid customFields format" });
       }
 
@@ -174,9 +140,7 @@ router.put(
       const updatedProfile = await Profile.findByIdAndUpdate(
         profileId,
         updates,
-        {
-          new: true,
-        }
+        { new: true }
       );
 
       res.json({
@@ -184,7 +148,6 @@ router.put(
         profile: updatedProfile,
       });
     } catch (err) {
-      console.error("❌ PUT /:id error:", err.message);
       res.status(500).json({ msg: "Server error", error: err.message });
     }
   }
@@ -203,7 +166,6 @@ router.delete("/:id", verifySession(), async (req, res) => {
 
     res.json({ msg: "Profile deleted successfully" });
   } catch (err) {
-    console.error("❌ DELETE /:id error:", err.message);
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 });
