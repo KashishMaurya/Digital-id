@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+const mongoose = require("mongoose");const cors = require("cors");
 const path = require("path");
 
 // SuperTokens setup
@@ -17,13 +16,13 @@ const EmailPassword = require("supertokens-node/recipe/emailpassword");
 supertokens.init({
   framework: "express",
   supertokens: {
-    connectionURI: "https://try.supertokens.com", // replace for production
+    connectionURI: "https://try.supertokens.com", // replace with your own instance in production
   },
   appInfo: {
     appName: "CareConnect",
-    apiDomain: "https://care-connect-iq7u.onrender.com",
+    apiDomain: "https://care-connect-iq7u.onrender.com", // Backend
     apiBasePath: "/auth",
-    websiteDomain: "digital-id-three.vercel.app",
+    websiteDomain: "https://digital-id-three.vercel.app", // Frontend
     websiteBasePath: "/auth",
   },
   recipeList: [EmailPassword.init(), Session.init()],
@@ -32,16 +31,19 @@ supertokens.init({
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS setup
-const allowedOrigins = ["http://localhost:5173", "digital-id-three.vercel.app"];
+//  CORS setup
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://digital-id-three.vercel.app", 
+];
 
 app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
+        callback(null, true);
       } else {
-        return callback(new Error("Not allowed by CORS"));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
@@ -50,8 +52,11 @@ app.use(
   })
 );
 
+// Middleware setup
 app.use(express.json());
-app.use(middleware()); // SuperTokens middleware
+app.use(middleware()); // SuperTokens session middleware
+
+// Static file hosting
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
@@ -59,20 +64,21 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/profiles", require("./routes/profileRoutes"));
 
 app.get("/", (req, res) => {
-  res.send("🚀 Digital ID API is running");
+  res.send("Digital ID API is running");
 });
 
-app.use(errorHandler()); // SuperTokens error handler
+// SuperTokens error handler
+app.use(errorHandler());
 
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    console.log(" MongoDB connected");
+    console.log("MongoDB connected");
     app.listen(PORT, () =>
       console.log(`Server running at http://localhost:${PORT}`)
     );
   })
   .catch((err) => {
-    console.error(" MongoDB connection failed:", err.message);
+    console.error("MongoDB connection failed:", err.message);
   });
