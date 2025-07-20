@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");const cors = require("cors");
+const mongoose = require("mongoose");
+const cors = require("cors");
 const path = require("path");
 
 // SuperTokens setup
@@ -31,38 +32,44 @@ supertokens.init({
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-//  CORS setup
+// Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://digital-id-three.vercel.app", 
+  "https://digital-id-three.vercel.app",
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    allowedHeaders: ["content-type", ...getAllCORSHeaders()],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
-);
+// CORS options object (used in both places)
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  allowedHeaders: ["content-type", ...getAllCORSHeaders()],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+};
 
-// Middleware setup
+// CORS middleware for normal requests
+app.use(cors(corsOptions));
+
+// CORS preflight support
+app.options("*", cors(corsOptions));
+
+// JSON parser and SuperTokens session middleware
 app.use(express.json());
-app.use(middleware()); // SuperTokens session middleware
+app.use(middleware());
 
-// Static file hosting
+// Static file hosting (for profile images)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
+// API routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/profiles", require("./routes/profileRoutes"));
 
+// Test route
 app.get("/", (req, res) => {
   res.send("Digital ID API is running");
 });
@@ -70,7 +77,7 @@ app.get("/", (req, res) => {
 // SuperTokens error handler
 app.use(errorHandler());
 
-// MongoDB connection
+// MongoDB connection and server start
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
