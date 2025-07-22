@@ -34,8 +34,7 @@ const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://digital-id-three.vercel.app",
-  "https://digital-bpr80esah-kashish-mauryas-projects.vercel.app/",
+  "https://digital-id-three.vercel.app"
 ];
 
 const corsOptions = {
