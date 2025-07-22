@@ -52,11 +52,11 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
 
-// Allow preflight requests for SuperTokens endpoints
-app.options("/auth/*", cors(corsOptions));
-
-// Apply CORS and session middleware (in correct order)
 app.use(cors(corsOptions));
+
+// Allow preflight requests for SuperTokens endpoints
+app.options("*", cors(corsOptions));
+
 app.use(express.json());
 app.use(middleware()); // SuperTokens
 
