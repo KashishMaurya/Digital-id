@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:5000", // your backend server
+        target: "https://care-connect-iq7u.onrender.com", //backend server
         changeOrigin: true,
         secure: false,
       },
