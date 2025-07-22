@@ -55,10 +55,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Allow preflight requests for SuperTokens endpoints
-app.options("*", cors(corsOptions));
+// ✅ Respond to preflight OPTIONS request manually
+app.options("*", cors(corsOptions), (req, res) => {
+  res.sendStatus(200);
+});
+
 
 app.use(express.json());
-app.use(middleware()); // SuperTokens
+app.use(middleware()); // SuperTokens session handling
 
 // Static assets
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -67,12 +71,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/profiles", require("./routes/profileRoutes"));
 
-// Test route
 app.get("/", (req, res) => {
   res.send("Digital ID API is running");
 });
 
-// SuperTokens error handler – must be last
+// SuperTokens error handler
 app.use(errorHandler());
 
 // Connect to MongoDB and start server
