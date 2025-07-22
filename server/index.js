@@ -35,6 +35,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   "http://localhost:5173",
   "https://digital-id-three.vercel.app",
+  "https://digital-bpr80esah-kashish-mauryas-projects.vercel.app/",
 ];
 
 const corsOptions = {
@@ -52,14 +53,12 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
 
-
 app.use(cors(corsOptions));
 
 app.options("*", cors(corsOptions), (req, res) => {
   console.log("OPTIONS preflight:", req.originalUrl);
   res.sendStatus(200);
 });
-
 
 app.use(express.json());
 
