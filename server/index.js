@@ -42,9 +42,9 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.warn(" Blocked by CORS:", origin);
-      // Still respond with a header, just don't allow credentials
-      callback(null, false); // safer than throwing
+      console.warn("Blocked by CORS:", origin);
+      // Do not crash! Just reject the request silently.
+      callback(null, false);
     }
   },
   credentials: true,
@@ -52,22 +52,17 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
 
+
 app.use(cors(corsOptions));
 
-// Allow preflight requests for SuperTokens endpoints
-// Respond to preflight OPTIONS request manually
-app.options("*", cors(corsOptions), (req, res, next) => {
-  console.log(" Received preflight request for:", req.originalUrl);
-  try {
-    res.sendStatus(200);
-  } catch (err) {
-    console.error(" Error handling OPTIONS:", err);
-    res.sendStatus(500);
-  }
+app.options("*", cors(corsOptions), (req, res) => {
+  console.log("OPTIONS preflight:", req.originalUrl);
+  res.sendStatus(200);
 });
 
 
 app.use(express.json());
+
 app.use(middleware()); // SuperTokens session handling
 
 // Static assets
