@@ -10,6 +10,8 @@ const {
 
 // Create Profile
 router.post("/", verifySession(), upload.single("photo"), async (req, res) => {
+  console.log("Body:", JSON.stringify(req.body, null, 2));
+  console.log("File:", req.file);
   try {
     const {
       name,

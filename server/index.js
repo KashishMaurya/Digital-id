@@ -54,10 +54,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.options("*", cors(corsOptions), (req, res) => {
-  console.log("OPTIONS preflight:", req.originalUrl);
-  res.sendStatus(200);
-});
+// app.options("*", cors(corsOptions), (req, res) => {
+//   console.log("OPTIONS preflight:", req.originalUrl);
+//   res.sendStatus(200);
+// });
 
 app.use(express.json());
 
